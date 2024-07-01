@@ -1,17 +1,22 @@
 import React from 'react';
-import NotificationItem from './NotificationItem';
-import './Notifications.css';
+import PropTypes from 'prop-types';
+import './NotificationItem.css';
 
-const Notifications = () => {
+const NotificationItem = ({ id, html, type, value }) => {
   return (
-    <div className="notifications">
-      <ul>
-        <NotificationItem type="default" value="New course available" />
-        <NotificationItem type="urgent" value="New resume available" />
-        <NotificationItem type="urgent" html="<strong>Urgent requirement</strong> - complete by EOD" />
-      </ul>
+    <div className={`notification ${type}`}>
+      {html ? <div dangerouslySetInnerHTML={html} /> : <p>{value}</p>}
     </div>
   );
 };
 
-export default Notifications;
+NotificationItem.propTypes = {
+  id: PropTypes.number.isRequired,
+  html: PropTypes.shape({
+    __html: PropTypes.string.isRequired
+  }),
+  type: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired
+};
+
+export default NotificationItem;

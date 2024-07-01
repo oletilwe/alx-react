@@ -1,22 +1,62 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { render } from '@testing-library/react';
 import Notifications from './Notifications';
-import NotificationItem from './NotificationItem';
+import { NotificationItemShape } from './NotificationItemShape';
 
-describe('Notifications Component', () => {
-  it('renders without crashing', () => {
-    shallow(<Notifications />);
+describe('Notifications component', () => {
+  test('renders correctly with empty listNotifications or no listNotifications prop', () => {
+    const { queryByText } = render(<Notifications />);
+    expect(queryByText('No new notification for now')).toBeInTheDocument();
+    expect(queryByText('Here is the list of notifications')).not.toBeInTheDocument();
   });
 
-  it('renders NotificationItem elements', () => {
-    const wrapper = shallow(<Notifications />);
-    expect(wrapper.find(NotificationItem).length).toBe(3);
+  test('renders notifications correctly with listNotifications', () => {
+    const notifications = [
+      {
+        id: 1,
+        html: null,
+        type: 'default',
+        value: 'New course available'
+      },
+      {
+        id: 2,
+        html: null,
+        type: 'info',
+        value: 'New resume available'
+      }
+    ];
+    const { queryByText } = render(<Notifications listNotifications={notifications} />);
+    expect(queryByText('New course available')).toBeInTheDocument();
+    expect(queryByText('New resume available')).toBeInTheDocument();
   });
 
-  it('renders the correct HTML for the first NotificationItem', () => {
-    const wrapper = shallow(<Notifications />);
-    const firstNotificationItem = wrapper.find(NotificationItem).at(0);
-    expect(firstNotificationItem.prop('type')).toBe('default');
-    expect(firstNotificationItem.prop('value')).toBe('New course available');
+  test('does not display "Here is the list of notifications" message when listNotifications is empty', () => {
+    const { queryByText } = render(<Notifications />);
+    expect(queryByText('Here is the list of notifications')).not.toBeInTheDocument();
+  });
+
+  test('displays "No new notification for now" when listNotifications is empty', () => {
+    const { queryByText } = render(<Notifications />);
+    expect(queryByText('No new notification for now')).toBeInTheDocument();
+  });
+
+  test('displays the correct number of NotificationItem components with listNotifications', () => {
+    const notifications = [
+      {
+        id: 1,
+        html: null,
+        type: 'default',
+        value: 'New course available'
+      },
+      {
+        id: 2,
+        html: null,
+        type: 'info',
+        value: 'New resume available'
+      }
+    ];
+    const { queryAllByTestId } = render(<Notifications listNotifications={notifications} />);
+    const notificationItems = queryAllByTestId('notification-item');
+    expect(notificationItems).toHaveLength(notifications.length);
   });
 });

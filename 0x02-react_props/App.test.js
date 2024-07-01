@@ -1,33 +1,23 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { render } from '@testing-library/react';
 import App from './App';
-import Notifications from './Notifications';
-import Header from './Header';
-import Login from './Login';
-import Footer from './Footer';
 
-describe('App Component', () => {
-  it('renders without crashing', () => {
-    shallow(<App />);
+describe('App component', () => {
+  test('renders Login component when isLoggedIn is false', () => {
+    const { queryByTestId } = render(<App isLoggedIn={false} />);
+    expect(queryByTestId('login-screen')).toBeInTheDocument();
+    expect(queryByTestId('course-list')).not.toBeInTheDocument();
   });
 
-  it('contains the Notifications component', () => {
-    const wrapper = shallow(<App />);
-    expect(wrapper.find(Notifications).length).toBe(1);
-  });
+  describe('when isLoggedIn is true', () => {
+    test('does not render Login component', () => {
+      const { queryByTestId } = render(<App isLoggedIn={true} />);
+      expect(queryByTestId('login-screen')).not.toBeInTheDocument();
+    });
 
-  it('contains the Header component', () => {
-    const wrapper = shallow(<App />);
-    expect(wrapper.find(Header).length).toBe(1);
-  });
-
-  it('contains the Login component', () => {
-    const wrapper = shallow(<App />);
-    expect(wrapper.find(Login).length).toBe(1);
-  });
-
-  it('contains the Footer component', () => {
-    const wrapper = shallow(<App />);
-    expect(wrapper.find(Footer).length).toBe(1);
+    test('renders CourseList component', () => {
+      const { queryByTestId } = render(<App isLoggedIn={true} />);
+      expect(queryByTestId('course-list')).toBeInTheDocument();
+    });
   });
 });
